@@ -1,5 +1,7 @@
 "use client";
 
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Particles from "react-tsparticles";
@@ -13,8 +15,12 @@ const questions = [
 ];
 
 export default function Onboarding() {
+  const router = useRouter();
+
   const [step, setStep] = useState(0);
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     skills: "",
     level: "",
@@ -22,7 +28,7 @@ export default function Onboarding() {
     time: "",
   });
 
-  // 🔊 Female Voice Function
+  // 🔊 Female Voice
   const speak = (text: string) => {
     const synth = window.speechSynthesis;
     const voices = synth.getVoices();
@@ -42,7 +48,7 @@ export default function Onboarding() {
     synth.speak(utterance);
   };
 
-  // ✍️ Typing + Voice Effect
+  // ✍️ Typing + Voice
   useEffect(() => {
     let i = 0;
     const current = questions[step] || "";
@@ -59,16 +65,51 @@ export default function Onboarding() {
     return () => clearInterval(interval);
   }, [step]);
 
-  const next = () => setStep((prev) => prev + 1);
+  const next = async () => {
+    if (step === 4) {
+      console.log("Saving data...", form);
+  
+      setLoading(true);
+  
+      const { data, error } = await supabase.from("users").insert([
+        {
+          skills: form.skills,
+          level: form.level,
+          goal: form.goal,
+          time: form.time,
+        },
+      ]);
+  
+      console.log("Response:", data, error);
+  
+      if (error) {
+        console.log("Error saving:", error.message);
+        alert("Error saving data: " + error.message);
+        setLoading(false);
+        return;
+      }
+  
+      console.log("Saved successfully ✅");
+  
+      setStep(5);
+  
+      setTimeout(() => {
+        console.log("Redirecting...");
+        router.push("/dashboard");
+      }, 2000);
+  
+      return;
+    }
+  
+    setStep((prev) => prev + 1);
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
 
-      {/* ✨ Particles (FIXED) */}
+      {/* ✨ Particles */}
       <Particles
-        id="tsparticles"
         options={{
-          background: { color: "transparent" },
           particles: {
             number: { value: 50 },
             size: { value: 2 },
@@ -79,10 +120,10 @@ export default function Onboarding() {
         className="absolute inset-0"
       />
 
-      {/* 🔥 Glow */}
+      {/* Glow */}
       <div className="absolute w-[500px] h-[500px] bg-orange-500 blur-[150px] opacity-20 rounded-full"></div>
 
-      {/* 🤖 Avatar (NO LABEL) */}
+      {/* Avatar */}
       <div className="absolute top-10">
         <div className="w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-red-500 animate-pulse"></div>
       </div>
@@ -91,10 +132,8 @@ export default function Onboarding() {
         key={step}
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
         className="z-10 w-full max-w-xl text-center px-6"
       >
-        {/* AI Text */}
         <h1 className="text-2xl md:text-3xl font-semibold mb-8">
           {text}
         </h1>
@@ -103,7 +142,7 @@ export default function Onboarding() {
         {step === 1 && (
           <input
             placeholder="HTML, CSS, Java..."
-            className="w-full p-4 rounded-xl bg-zinc-900 text-lg"
+            className="w-full p-4 rounded-xl bg-zinc-900"
             onChange={(e) =>
               setForm({ ...form, skills: e.target.value })
             }
@@ -151,22 +190,22 @@ export default function Onboarding() {
           <input
             type="number"
             placeholder="2 hours"
-            className="w-full p-4 rounded-xl bg-zinc-900 text-lg"
+            className="w-full p-4 rounded-xl bg-zinc-900"
             onChange={(e) =>
               setForm({ ...form, time: e.target.value })
             }
           />
         )}
 
-        {/* 🔥 NEXT BUTTON */}
+        {/* BUTTON */}
         {step > 0 && step < 5 && (
           <motion.button
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             onClick={next}
-            className="mt-6 px-8 py-3 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/30"
+            disabled={loading}
+            className="mt-6 px-8 py-3 bg-orange-500 rounded-xl"
           >
-            Next →
+            {loading ? "Saving..." : "Next →"}
           </motion.button>
         )}
 
@@ -175,7 +214,7 @@ export default function Onboarding() {
           <motion.button
             whileHover={{ scale: 1.1 }}
             onClick={next}
-            className="px-8 py-3 bg-orange-500 rounded-xl shadow-lg shadow-orange-500/30"
+            className="px-8 py-3 bg-orange-500 rounded-xl"
           >
             Start →
           </motion.button>
