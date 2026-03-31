@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
@@ -22,63 +23,119 @@ export default function Dashboard() {
     fetchUser();
   }, []);
 
-  // fake progress for now
-  const progress = 60;
-  const xp = 120;
-
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-10 max-w-6xl mx-auto"
+    >
 
-      {/* Header */}
-      <h1 className="text-3xl font-bold mb-6">Dashboard 🚀</h1>
+      {/* HEADER */}
+      <div>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Dashboard
+        </h1>
+        <p className="text-gray-400 mt-2">
+          Track your progress and continue your journey
+        </p>
+      </div>
 
       {!user ? (
         <p>Loading...</p>
       ) : (
-        <div className="grid md:grid-cols-2 gap-6">
+        <>
+          {/* MAIN GRID */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* 👤 User Info Card */}
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Your Profile</h2>
+            {/* PROFILE CARD */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="lg:col-span-2 p-6 rounded-xl bg-white/[0.02] border border-white/10 backdrop-blur-md hover:bg-white/[0.04] hover:border-white/20 transition-all"
+            >
+              <h2 className="text-lg font-medium mb-4">
+                Profile
+              </h2>
 
-            <p><strong>Skills:</strong> {user.skills}</p>
-            <p><strong>Level:</strong> {user.level}</p>
-            <p><strong>Goal:</strong> {user.goal}</p>
-            <p><strong>Study Time:</strong> {user.time} hrs/day</p>
+              <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-300">
+                <p><span className="text-gray-500">Skills:</span> {user.skills}</p>
+                <p><span className="text-gray-500">Level:</span> {user.level}</p>
+                <p><span className="text-gray-500">Goal:</span> {user.goal}</p>
+                <p><span className="text-gray-500">Time:</span> {user.time} hrs/day</p>
+              </div>
+            </motion.div>
+
+            {/* XP CARD */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="p-6 rounded-xl bg-white/[0.02] border border-white/10 backdrop-blur-md hover:bg-white/[0.04] hover:border-white/20 transition-all"
+            >
+              <p className="text-sm text-gray-400">
+                Experience
+              </p>
+
+              <h2 className="text-2xl font-semibold mt-2">
+                140 XP
+              </h2>
+
+              <p className="text-sm text-gray-500 mt-1">
+                Level 1
+              </p>
+            </motion.div>
+
           </div>
 
-          {/* 📊 Progress Card */}
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Progress</h2>
+          {/* SECOND ROW */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <p className="mb-2">Skill Progress</p>
-            <div className="w-full bg-zinc-700 h-3 rounded-full">
-              <div
-                className="bg-orange-500 h-3 rounded-full"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+            {/* PROGRESS */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="lg:col-span-2 p-6 rounded-xl bg-white/[0.02] border border-white/10 backdrop-blur-md hover:bg-white/[0.04] hover:border-white/20 transition-all"
+            >
+              <p className="text-sm text-gray-400 mb-3">
+                Progress
+              </p>
 
-            <p className="mt-2">{progress}% completed</p>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "65%" }}
+                  transition={{ duration: 1 }}
+                  className="h-2 bg-white"
+                />
+              </div>
+
+              <p className="text-sm text-gray-500 mt-2">
+                65% completed
+              </p>
+            </motion.div>
+
+            {/* QUICK ACTION */}
+            <motion.div
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="p-6 rounded-xl bg-white/[0.02] border border-white/10 backdrop-blur-md hover:bg-white/[0.04] hover:border-white/20 transition-all"
+            >
+              <p className="text-sm text-gray-400">
+                Next Step
+              </p>
+
+              <h3 className="text-lg font-medium mt-2">
+                Continue Learning
+              </h3>
+
+              <button className="mt-4 px-4 py-2 rounded-md bg-white text-black text-sm font-medium transition hover:scale-[1.03]">
+                Resume
+              </button>
+            </motion.div>
+
           </div>
-
-          {/* ⚡ XP Card */}
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Gamification</h2>
-
-            <p>XP Points: {xp}</p>
-            <p>Level: Beginner</p>
-          </div>
-
-          {/* 🎯 Goal Card */}
-          <div className="bg-zinc-900 p-6 rounded-2xl shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Your Goal</h2>
-
-            <p>{user.goal}</p>
-          </div>
-
-        </div>
+        </>
       )}
-    </div>
+    </motion.div>
   );
 }

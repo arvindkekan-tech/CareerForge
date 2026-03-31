@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import Particles from "react-tsparticles";
 
 const questions = [
-  "Hey 👋 I'm here to guide you. Let's start your journey.",
+  "Hey! I'm here to guide you. Let's start your journey.",
   "What skills do you already have?",
   "What’s your current level?",
   "What’s your goal?",
@@ -28,7 +28,7 @@ export default function Onboarding() {
     time: "",
   });
 
-  // 🔊 Female Voice
+  //  Female Voice
   const speak = (text: string) => {
     const synth = window.speechSynthesis;
     const voices = synth.getVoices();
@@ -48,7 +48,7 @@ export default function Onboarding() {
     synth.speak(utterance);
   };
 
-  // ✍️ Typing + Voice
+  //  Typing + Voice
   useEffect(() => {
     let i = 0;
     const current = questions[step] || "";
@@ -107,7 +107,7 @@ export default function Onboarding() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
 
-      {/* ✨ Particles */}
+      {/*  Particles */}
       <Particles
         options={{
           particles: {
